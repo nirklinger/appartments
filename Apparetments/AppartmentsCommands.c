@@ -105,6 +105,7 @@ void buyAppartment(AppartmentsList *appartments, unsigned int id)
 	{
 		appartments->tail = node;
 		freeAppartmentNode(node->next);
+		node->next = NULL;
 	}
 	else
 	{
