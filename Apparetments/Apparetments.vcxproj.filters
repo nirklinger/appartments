@@ -24,12 +24,18 @@
     <ClCompile Include="AppartmentsCommands.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="history.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppartmentStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AppartmentsCommands.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="history.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

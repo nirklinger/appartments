@@ -122,47 +122,66 @@ int getNewAppartmentCode()
 
 void listen(AppartmentsList *appartments)
 {
-	char commandString[200];
+	char commandString[200];	
 
 	while (true)
 	{
 		gets(commandString);
+		executeCommand(commandString, appartments);
+	}
+}
 
-		char *f = strtok(commandString, " ");
+void executeCommand(char* commandString, AppartmentsList *appartments)
+{
+	int len = strlen(commandString);
+	char *commandForHistory = (char*)malloc(len);
+	strcpy(commandForHistory, commandString);
 
-		if (strcmp(f, "add-apt") == 0)
-		{
-			addAppartment(appartments, commandString + 8);
-		}
-		else if (strcmp(f, "find-apt") == 0)
-		{
-			printf("find %s", f);
-		}
-		else if (strcmp(f, "delete-apt") == 0)
-		{
-			printf("delete %s", f);
-		}
-		else if (strcmp(f, "buy-apt") == 0)
-		{
-			unsigned int id;
-			sscanf(strtok(NULL, " "), "%u", &id);
-			buyAppartment(appartments, id);
-		}
-		else if (strcmp(f, "history") == 0)
-		{
-			printf("history %s", f);
-		}
-		else if (strcmp(f, "short_history") == 0)
-		{
-			printf("short %s", f);
-		}
-		else if (strcmp(f, "exit") == 0)
-		{
-			printf("exit %s", f);
-		}
-		else if (*f == '!')
-		{
-			printf("!!!!!!! %s", f);
-		}
+	char *f = strtok(commandString, " ");
+
+	if (strcmp(f, "add-apt") == 0)
+	{
+		addAppartment(appartments, commandString + 8);
+		pushNewCommand(commandForHistory);
+	}
+	else if (strcmp(f, "find-apt") == 0)
+	{
+		printf("find %s\n", f);
+		pushNewCommand(commandForHistory);
+	}
+	else if (strcmp(f, "delete-apt") == 0)
+	{
+		printf("delete %s\n", f);
+		pushNewCommand(commandForHistory);
+	}
+	else if (strcmp(f, "buy-apt") == 0)
+	{
+		unsigned int id;
+		sscanf(strtok(NULL, " "), "%u", &id);
+		buyAppartment(appartments, id);
+		pushNewCommand(commandForHistory);
+	}
+	else if (strcmp(f, "history") == 0)
+	{
+		int count = longTermHistory();
+		shortTermHistory(count);
+		pushNewCommand(commandForHistory);
+	}
+	else if (strcmp(f, "short_history") == 0)
+	{
+		shortTermHistory(1);
+		pushNewCommand(commandForHistory);
+	}
+	else if (strcmp(f, "exit") == 0)
+	{
+		printf("exit %s\n", f);
+	}
+	else if (*f == '!')
+	{
+		char *historyCommand = getCommandFromHistory(f);
+		int len = strlen(historyCommand);
+		char *commandToExecute = (char*)malloc(len);
+		strcpy(commandToExecute, historyCommand);
+		executeCommand(commandToExecute, appartments);		
 	}
 }
