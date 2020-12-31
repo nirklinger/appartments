@@ -139,6 +139,11 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 
 	char *f = strtok(commandString, " ");
 
+	if(f == NULL)
+	{
+		return;
+	}
+	
 	if (strcmp(f, "add-apt") == 0)
 	{
 		addAppartment(appartments, commandString + 8);
@@ -174,11 +179,13 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 	}
 	else if (strcmp(f, "exit") == 0)
 	{
-		printf("exit %s\n", f);
+		printf("Bye Bye!");
+		writeHistoryFile();
+		exit(0);
 	}
-	else if (*f == '!')
+	else if (*commandForHistory == '!')
 	{
-		char *historyCommand = getCommandFromHistory(f);
+		char *historyCommand = getCommandFromHistory(commandForHistory);
 		int len = strlen(historyCommand);
 		char *commandToExecute = (char*)malloc(len);
 		strcpy(commandToExecute, historyCommand);
