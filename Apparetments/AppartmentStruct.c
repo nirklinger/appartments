@@ -1,7 +1,4 @@
-#include <time.h>
-#include <stdlib.h>
 #include "AppartmentStruct.h"
-#include <stdbool.h>
 
 bool isEmptyList(AppartmentsList *appartments)
 {
@@ -44,7 +41,7 @@ EntryDate* createEntryDate(short int day, short int month, short int year)
 	return newDate;
 }
 
-Appartment* createAppartment(unsigned int id, char* address, int price,
+Appartment* createAppartment(unsigned short int id, char* address, int price,
 	short int roomCount, short int day, short int month, short int year, time_t dbEntryTime)
 {
 	Appartment *appartment = (Appartment*)malloc(sizeof(Appartment));
@@ -58,7 +55,7 @@ Appartment* createAppartment(unsigned int id, char* address, int price,
 	return appartment;
 }
 
-Appartment* createAppartmentWithNowTimestamp(unsigned int id, char* address, int price,
+Appartment* createAppartmentWithNowTimestamp(unsigned short int id, char* address, int price,
 	short int roomCount, short int day, short int month, short int year)
 {
 	time_t nowTime;

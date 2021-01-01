@@ -144,12 +144,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppartmentsCommands.c" />
+    <ClCompile Include="AppartmentsFile.c" />
     <ClCompile Include="AppartmentStruct.c" />
     <ClCompile Include="history.c" />
     <ClCompile Include="Main.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppartmentsCommands.h" />
+    <ClInclude Include="AppartmentsFile.h" />
     <ClInclude Include="AppartmentStruct.h" />
     <ClInclude Include="history.h" />
   </ItemGroup>

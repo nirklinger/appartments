@@ -1,7 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "AppartmentsCommands.h"
 
 int appartmentCode = 0;
@@ -62,7 +58,7 @@ void addAppartment(AppartmentsList *appartments, char *commandString)
 	address[i] = '\0';
 	realloc(address, i + 1);
 
-	sscanf(addressEnd + 1, "%d %hi %hi %hi %hi",
+	sscanf(addressEnd + 1, "%d %hu %hu %hu %hu",
 		&price, &rooms, &day, &month, &year);
 
 	Appartment *apt = createAppartmentWithNowTimestamp(getNewAppartmentCode(),
@@ -122,13 +118,42 @@ int getNewAppartmentCode()
 
 void listen(AppartmentsList *appartments)
 {
-	char commandString[200];	
+	char *commandString;	
 
 	while (true)
 	{
-		gets(commandString);
+		commandString = getNextCommand();
 		executeCommand(commandString, appartments);
 	}
+}
+
+char* getNextCommand()
+{
+	char x;
+	unsigned int commandLength = 0, currentSize = 2;
+	char *nextCommand = (char*)malloc(currentSize);
+	
+	while (x = getchar())
+	{
+		if (x == '\n' || x == '\0')
+		{
+			nextCommand = realloc(nextCommand, commandLength+1);
+			nextCommand[commandLength] = '\0';
+			return nextCommand;
+		}			
+		else
+		{
+			if (commandLength >= currentSize)
+			{
+				currentSize *= 2;
+				nextCommand = realloc(nextCommand, currentSize);
+			}
+			
+			nextCommand[commandLength++] = x;
+		}			
+	}
+
+	return nextCommand;
 }
 
 void executeCommand(char* commandString, AppartmentsList *appartments)
@@ -181,6 +206,7 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 	{
 		printf("Bye Bye!");
 		writeHistoryFile();
+		writeAppartmentsToBinaryFile(appartments);
 		exit(0);
 	}
 	else if (*commandForHistory == '!')
