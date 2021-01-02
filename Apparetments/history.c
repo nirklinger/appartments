@@ -213,7 +213,6 @@ void loadHistoryFromFile()
 
 	if(historyFile == NULL)
 	{
-		printf("No history commands found.\n");
 		return;
 	}
 	
