@@ -46,7 +46,7 @@ void writeLongTermHistoryToFile(FILE *historyFile, HistoryNode *node);
 
 void writeHistoryFile();
 
-void loadHistoryFromoFile();
+void loadHistoryFromFile();
 
 void LoadNextCommand(FILE *historyFile, char* commandString);
 #endif //HISTORY 

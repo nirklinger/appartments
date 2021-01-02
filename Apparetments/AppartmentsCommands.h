@@ -18,7 +18,11 @@ void addAppartmentSortedByPrice(AppartmentsList *appartments, Appartment *apt);
 
 void buyAppartment(AppartmentsList *appartments, unsigned int id);
 
-int getNewAppartmentCode();
+unsigned short int getNewAppartmentCode();
+
+void setLastAppartmentCode(unsigned short int lastCode);
 
 void executeCommand(char* commandString, AppartmentsList *appartments);
+
+void printWelcome();
 #endif // APT_COMAND

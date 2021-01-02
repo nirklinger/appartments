@@ -207,7 +207,7 @@ void writeShortHistoryCommandsToFile(FILE* historyFile)
 	}
 }
 
-void loadHistoryFromoFile()
+void loadHistoryFromFile()
 {
 	FILE* historyFile = fopen(HISTORY_FILE, "r");
 

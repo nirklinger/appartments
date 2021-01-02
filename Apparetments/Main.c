@@ -8,11 +8,9 @@ void main()
 	AppartmentsList appartments;
 	makeEmptyAppartmentsList(&appartments);	
 	initHistoryMemory();
-	loadHistoryFromoFile();
-	// TODO: load apt binary
-	// TODO: load command history
+	loadHistoryFromFile();
+	loadAppartmentsFromFile(&appartments);
+	printWelcome();
 	listen(&appartments);
-	// TODO: write apt binary
-	// TODO: write command history
 }
 

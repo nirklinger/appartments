@@ -58,8 +58,7 @@ Appartment* createAppartment(unsigned short int id, char* address, int price,
 Appartment* createAppartmentWithNowTimestamp(unsigned short int id, char* address, int price,
 	short int roomCount, short int day, short int month, short int year)
 {
-	time_t nowTime;
-	nowTime = time(NULL);
+	time_t nowTime = time(NULL);
 	Appartment *apt = createAppartment(id, address, price, roomCount, day, month, year, nowTime);
 
 	return apt;
