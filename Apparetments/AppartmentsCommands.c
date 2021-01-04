@@ -5,7 +5,7 @@ unsigned short int appartmentCode = 0;
 void printWelcome()
 {
 	printf("Please enter one of the following commands:\n");
-	printf("add - apt, find - apt, buy - apt, delete - apt or exit\n");
+	printf("add-apt, find-apt, buy-apt, delete-apt or exit\n");
 	printf("For reconstruction commands, please enter :\n");
 	printf("!!, !num, history, short_history or !num^str1^str2\n");
 }
