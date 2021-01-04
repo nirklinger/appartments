@@ -1,6 +1,7 @@
 #ifndef APT_STRUCT
 #define APT_STRUCT
 #include <time.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 typedef struct entryDate {
@@ -10,7 +11,7 @@ typedef struct entryDate {
 } EntryDate;
 
 typedef struct appartment {
-	unsigned int id;
+	unsigned short int id;
 	char* address;
 	int price;
 	short int roomCount;
@@ -36,10 +37,10 @@ AppartmentNode* createAppartmentNode(Appartment *apt, AppartmentNode *next);
 
 EntryDate* createEntryDate(short int day, short int month, short int year);
 
-Appartment* createAppartment(unsigned int id, char* address, int price,
+Appartment* createAppartment(unsigned short int id, char* address, int price,
 	short int roomCount, short int day, short int month, short int year, time_t dbEntryTime);
 
-Appartment* createAppartmentWithNowTimestamp(unsigned int id, char* address, int price,
+Appartment* createAppartmentWithNowTimestamp(unsigned short int id, char* address, int price,
 	short int roomCount, short int day, short int month, short int year);
 
 void freeAppartment(Appartment * apt);

@@ -1,10 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include "history.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#define N 7
-#define HISTORY_FILE "./history.txt"
 
 char *short_term_history[N];
 HistoryList long_term_history;
@@ -213,13 +207,12 @@ void writeShortHistoryCommandsToFile(FILE* historyFile)
 	}
 }
 
-void loadHistoryFromoFile()
+void loadHistoryFromFile()
 {
 	FILE* historyFile = fopen(HISTORY_FILE, "r");
 
 	if(historyFile == NULL)
 	{
-		printf("No history commands found.\n");
 		return;
 	}
 	

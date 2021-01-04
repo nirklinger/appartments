@@ -27,6 +27,9 @@
     <ClCompile Include="history.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AppartmentsFile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppartmentStruct.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="history.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AppartmentsFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
