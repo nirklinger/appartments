@@ -1,24 +1,25 @@
 #ifndef APT_FILE
 #define APT_FILE
 #define _CRT_SECURE_NO_WARNINGS
-#define APPARTMENTS_FILE "./appartments.dat"
+#define ApartmentS_FILE "./apartments.dat"
 #define SHORT_SIZE sizeof(unsigned short int)
 #include <stdio.h>
 #include <string.h>
-#include "AppartmentStruct.h"
-#include "AppartmentsCommands.h"
+#include "utils.h"
+#include "ApartmentStruct.h"
+#include "ApartmentsCommands.h"
 
 typedef unsigned char BYTE;
 
-int writeAppartmentsToBinaryFile(AppartmentsList *aptList);
+int writeApartmentsToBinaryFile(ApartmentsList *aptList);
 
 void buildCompressedData(BYTE *compressedData, short int roomCount, EntryDate* date);
 
-void writeAppartmentToFile(FILE* file, Appartment *apt);
+void writeApartmentToFile(FILE* file, Apartment *apt);
 
-void loadAppartmentsFromFile(AppartmentsList *aptList);
+void loadApartmentsFromFile(ApartmentsList *aptList);
 
-Appartment* readAppartmentFromFile(FILE* file);
+Apartment* readApartmentFromFile(FILE* file);
 
 void parseCompressedData(BYTE* compressedData,
 	unsigned short int* roomCount,

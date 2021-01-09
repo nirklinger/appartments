@@ -1,10 +1,6 @@
-#include "AppartmentsCommands.h"
-#define ONE_DAY 86400
-#define true 1
-#define false 0
-typedef int BOOL;
+#include "ApartmentsCommands.h"
 
-unsigned short int appartmentCode = 0;
+unsigned short int apartmentCode = 0;
 
 void printWelcome()
 {
@@ -14,41 +10,41 @@ void printWelcome()
 	printf("!!, !num, history, short_history or !num^str1^str2\n");
 }
 
-#pragma region addAppartments
-void addAppartmentSortedByPrice(AppartmentsList *appartments, Appartment *apt)
+#pragma region addApartments
+void addApartmentSortedByPrice(ApartmentsList *apartments, Apartment *apt)
 {
-	if (isEmptyList(appartments))
+	if (isEmptyList(apartments))
 	{
-		appartments->head = appartments->tail = createAppartmentNode(apt, NULL);
+		apartments->head = apartments->tail = createApartmentNode(apt, NULL);
 		return;
 	}
 
-	if (appartments->head->appartment->price >= apt->price)
+	if (apartments->head->apartment->price >= apt->price)
 	{
-		AppartmentNode *newHead = createAppartmentNode(apt, appartments->head);
-		appartments->head = newHead;
+		ApartmentNode *newHead = createApartmentNode(apt, apartments->head);
+		apartments->head = newHead;
 		return;
 	}
 
-	AppartmentNode *node = appartments->head;
+	ApartmentNode *node = apartments->head;
 
-	while (node != appartments->tail && node->next->appartment->price < apt->price)
+	while (node != apartments->tail && node->next->apartment->price < apt->price)
 	{
 		node = node->next;
 	}
 
-	if (node == appartments->tail)
+	if (node == apartments->tail)
 	{
-		node->next = createAppartmentNode(apt, NULL);
-		appartments->tail = node->next;
+		node->next = createApartmentNode(apt, NULL);
+		apartments->tail = node->next;
 	}
 	else
 	{
-		node->next = createAppartmentNode(apt, node->next);
+		node->next = createApartmentNode(apt, node->next);
 	}
 }
 
-void addAppartment(AppartmentsList *appartments, char *commandString)
+void addApartment(ApartmentsList *apartments, char *commandString)
 {
 	char *addressStart = strchr(commandString, '"');
 	char *addressEnd = strrchr(commandString, '"');
@@ -57,6 +53,7 @@ void addAppartment(AppartmentsList *appartments, char *commandString)
 	short int rooms, day, month, year;
 
 	char *address = (char*)malloc(commandLength);
+	checkFailedMalloc(address);
 	char *p = addressStart + 1;
 	int i = 0;
 
@@ -73,67 +70,68 @@ void addAppartment(AppartmentsList *appartments, char *commandString)
 	sscanf(addressEnd + 1, "%d %hu %hu %hu %hu",
 		&price, &rooms, &day, &month, &year);
 
-	Appartment *apt = createAppartmentWithNowTimestamp(getNewAppartmentCode(),
+	Apartment *apt = createApartmentWithNowTimestamp(getNewApartmentCode(),
 		address, price, rooms, day, month, year);
 
-	addAppartmentSortedByPrice(appartments, apt);
+	addApartmentSortedByPrice(apartments, apt);
 }
-#pragma endregion addAppartments
+#pragma endregion addApartments
 
-void buyAppartment(AppartmentsList *appartments, unsigned int id)
+void buyApartment(ApartmentsList *apartments, unsigned int id)
 {
-	AppartmentNode *node = appartments->head;
+	ApartmentNode *node = apartments->head;
 
-	if (node->appartment->id == id)
+	if (node->apartment->id == id)
 	{
-		if (appartments->head == appartments->tail)
+		if (apartments->head == apartments->tail)
 		{
-			makeEmptyAppartmentsList(appartments);
+			makeEmptyApartmentsList(apartments);
 		}
 		else
 		{
-			appartments->head = node->next;
+			apartments->head = node->next;
 		}
 		
-		freeAppartmentNode(node);
+		freeApartmentNode(node);
 		return;
 	}
 	
-	while (node != appartments->tail && node->next->appartment->id != id)
+	while (node != apartments->tail && node->next->apartment->id != id)
 	{
 		node = node->next;
 	}
 
-	if (node == appartments->tail)
+	if (node == apartments->tail)
 	{
+		printf("No apartment match id: %d\n", id);
 		return;
 	}
 
-	if (node->next == appartments->tail)
+	if (node->next == apartments->tail)
 	{
-		appartments->tail = node;
-		freeAppartmentNode(node->next);
+		apartments->tail = node;
+		freeApartmentNode(node->next);
 		node->next = NULL;
 	}
 	else
 	{
-		AppartmentNode *tmp = node->next;
+		ApartmentNode *tmp = node->next;
 		node->next = node->next->next;
-		freeAppartmentNode(tmp);
+		freeApartmentNode(tmp);
 	}
 }
 
-void printAppartment(Appartment* appartment)
+void printApartment(Apartment* apartment)
 {
 	printf("Apt details:\n");
-	printf("Code: %hu\n", appartment->id); 
-	printf("Address: %s\n", appartment->address);
-	printf("Number of rooms: %hi\n", appartment->roomCount); 
-	printf("Price: %d\n", appartment->price);
+	printf("Code: %hu\n", apartment->id); 
+	printf("Address: %s\n", apartment->address);
+	printf("Number of rooms: %hi\n", apartment->roomCount); 
+	printf("Price: %d\n", apartment->price);
 	printf("Entry date: "); 
-	printEntryDate(appartment->entryDate);
+	printEntryDate(apartment->entryDate);
 	printf("Database entry date: ");
-	printDBEntryDate(appartment->dbEntryTime);
+	printDBEntryDate(apartment->dbEntryTime);
 }
 
 void printEntryDate(EntryDate* entryDate)
@@ -175,67 +173,72 @@ short int convertMonthToNumber(char* month)
 	return 0;
 }
 
-AppartmentNode * findApartment(AppartmentsList* appartments, char* commandString) 
+ApartmentNode * findApartment(ApartmentsList* apartments, char* commandString) 
 {	
 	Flag* flags;
 	int flagsArraySize;
-	BOOL isAsc;
+	BOOL isAsc, hasFound = false;
 	flags = getFlagsArray(commandString, &flagsArraySize, &isAsc);
-	printAptByFlag(appartments->head, flags, flagsArraySize, isAsc);
+	printAptByFlag(apartments->head, flags, flagsArraySize, isAsc, &hasFound);
 	free(flags);
+
+	if (!hasFound)
+	{
+		printf("Could not find any apartment\n");
+	}
 }
 
-void printAptByFlag(AppartmentNode* appartmentNode, Flag* flags, int flagsArraySize, BOOL isAsc)
+void printAptByFlag(ApartmentNode* apartmentNode, Flag* flags, int flagsArraySize, BOOL isAsc, BOOL *hasFound)
 {	
-	BOOL isAppartmentMatchFlag = false;
+	BOOL isApartmentMatchFlag = false;
 
-	//is Empty list
-	if(appartmentNode == NULL){
+	if(apartmentNode == NULL){
 		return;
 	}
 
 	if(!isAsc) {
-		printAptByFlag(appartmentNode->next, flags, flagsArraySize, isAsc);
+		printAptByFlag(apartmentNode->next, flags, flagsArraySize, isAsc, hasFound);
 	}
 
 	for (int i = 0; i < flagsArraySize; i++)
 	{
-		isAppartmentMatchFlag = checkIfAppartmentMatchFlag(flags[i], appartmentNode->appartment);
-		if(!isAppartmentMatchFlag){
+		isApartmentMatchFlag = checkIfApartmentMatchFlag(flags[i], apartmentNode->apartment);
+		if(!isApartmentMatchFlag){
 			break;
 		}
 	}
 
-	if (isAppartmentMatchFlag){
-		printAppartment(appartmentNode->appartment);
+	if (isApartmentMatchFlag){
+		printApartment(apartmentNode->apartment);
+		*hasFound = true;
 	}
 
 	if(isAsc){
-		printAptByFlag(appartmentNode->next, flags, flagsArraySize, isAsc);
+		printAptByFlag(apartmentNode->next, flags, flagsArraySize, isAsc, hasFound);
 	}
 }
 
-BOOL checkIfAppartmentMatchFlag(Flag flag, Appartment* appartment)
+BOOL checkIfApartmentMatchFlag(Flag flag, Apartment* apartment)
 {
 	if(strcmp(flag.name,"-MaxPrice") == 0){
-		return (appartment->price <= flag.value) ? true : false;
+		return (apartment->price <= flag.value) ? true : false;
 	}
 	if(strcmp(flag.name,"-MinPrice") == 0) {
-		return (appartment->price >= flag.value) ? true : false;
+		return (apartment->price >= flag.value) ? true : false;
 	}
 	if(strcmp(flag.name,"-MinNumRooms") == 0){ 
-		return (appartment->roomCount >= flag.value) ? true : false;
+		return (apartment->roomCount >= flag.value) ? true : false;
 	}
 	if(strcmp(flag.name,"-MaxNumRooms") == 0){
-		return (appartment->roomCount <= flag.value) ? true : false;
+		return (apartment->roomCount <= flag.value) ? true : false;
 	}
 	if(strcmp(flag.name,"-Date") == 0){
 		EntryDate* flagEntryDate = convertCommandDateToEntryDate(flag.value);
-		BOOL isAppartmentDateMatchFlagDate = isDateInRange(*(appartment->entryDate), *(flagEntryDate));
-		return (isAppartmentDateMatchFlagDate) ? true : false;
+		BOOL isApartmentDateMatchFlagDate = isDateInRange(*(apartment->entryDate), *(flagEntryDate));
+		return (isApartmentDateMatchFlagDate) ? true : false;
 	}
 	if(strcmp(flag.name, "-Enter") == 0){
-		return (isDBEntryTimeAddedInLastDays(appartment, flag.value)) ? true : false;
+		return (isDBEntryTimeAddedInLastDays(apartment, flag.value)) ? true : false;
 	}
 	return false;
 }
@@ -277,19 +280,20 @@ BOOL isDateInRange(EntryDate date1, EntryDate date2)
 	return (date1.day < date2.day) ? true : false ;	
 }
 
-BOOL isDBEntryTimeAddedInLastDays(Appartment* appartment, int numberOfDays)
+BOOL isDBEntryTimeAddedInLastDays(Apartment* apartment, int numberOfDays)
 {
 	time_t nowTime;
 	nowTime = time(NULL);
-	long long appartmentDBEntryTime = (long long)appartment->dbEntryTime;
+	long long apartmentDBEntryTime = (long long)apartment->dbEntryTime;
 	long long currentTime = (long long) nowTime;
 	
-	return ((currentTime - appartmentDBEntryTime) <= ONE_DAY*numberOfDays);
+	return ((currentTime - apartmentDBEntryTime) <= ONE_DAY*numberOfDays);
 }
 
 Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc) 
 {
 	Flag* flags = (Flag*)malloc(sizeof(Flag)*10);
+	checkFailedMalloc(flags);
 	char* valueStr;
 	char* flagName = strtok(commandString, " ");
 	*isAsc = true;
@@ -314,24 +318,65 @@ Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc)
 	return flags;
 }
 
-unsigned short int getNewAppartmentCode()
+void deleteApartment(ApartmentsList* apartments, int days) 
 {
-	return ++appartmentCode;
+	ApartmentNode* aptToFree;
+	
+	if(apartments->head == apartments->tail){
+		if(isDBEntryTimeAddedInLastDays(apartments->head->apartment, days)){
+			aptToFree = apartments->head;
+			makeEmptyApartmentsList(apartments);
+			freeApartmentNode(aptToFree);
+		}
+		return;
+	} 
+
+	apartments->head = deleteApartmentNode(apartments->head, days, &(apartments->tail));
+
 }
 
-void setLastAppartmentCode(unsigned short int lastCode)
-{
-	appartmentCode = lastCode;
+//Delete apprtments according to last X days, return new head
+ApartmentNode* deleteApartmentNode(ApartmentNode* apartmentNode, int days, ApartmentNode** newTail){
+	ApartmentNode* aptToFree, *newAptList;
+
+	if(apartmentNode == NULL){
+		return NULL;
+	}
+
+	newAptList = deleteApartmentNode(apartmentNode->next, days, newTail);
+	
+	if(isDBEntryTimeAddedInLastDays(apartmentNode->apartment, days)){
+		freeApartmentNode(apartmentNode);
+		return newAptList;
+	}
+	else {
+		apartmentNode->next = newAptList;
+		if(newAptList == NULL){
+			*newTail = apartmentNode;
+		}
+		return apartmentNode;
+	}
+	
 }
 
-void listen(AppartmentsList *appartments)
+unsigned short int getNewApartmentCode()
+{
+	return ++apartmentCode;
+}
+
+void setLastApartmentCode(unsigned short int lastCode)
+{
+	apartmentCode = lastCode;
+}
+
+void listen(ApartmentsList *apartments)
 {
 	char *commandString;	
 
 	while (true)
 	{
 		commandString = getNextCommand();
-		executeCommand(commandString, appartments);
+		executeCommand(commandString, apartments);
 	}
 }
 
@@ -340,6 +385,7 @@ char* getNextCommand()
 	char x;
 	unsigned int commandLength = 0, currentSize = 2;
 	char *nextCommand = (char*)malloc(currentSize);
+	checkFailedMalloc(nextCommand);
 	printf(">> ");
 	
 	while (x = getchar())
@@ -365,10 +411,11 @@ char* getNextCommand()
 	return nextCommand;
 }
 
-void executeCommand(char* commandString, AppartmentsList *appartments)
+void executeCommand(char* commandString, ApartmentsList *apartments)
 {
 	int len = strlen(commandString);
 	char *commandForHistory = (char*)malloc(len+1);
+	checkFailedMalloc(commandForHistory);
 	strcpy(commandForHistory, commandString);
 	commandForHistory[len] = '\0';
 
@@ -381,24 +428,28 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 	
 	if (strcmp(f, "add-apt") == 0)
 	{
-		addAppartment(appartments, commandString + 8);
+		addApartment(apartments, commandString + 8);
 		pushNewCommand(commandForHistory);
 	}
 	else if (strcmp(f, "find-apt") == 0)
 	{
-		findApartment(appartments, commandString + 9);
+		findApartment(apartments, commandString + 9);
 		pushNewCommand(commandForHistory);
 	}
 	else if (strcmp(f, "delete-apt") == 0)
 	{
-		printf("delete %s\n", f);
+		int days;
+		// Remove flag
+		strtok(NULL, " ");	
+		sscanf(strtok(NULL, " "), "%d", &days);
+		deleteApartment(apartments, days);
 		pushNewCommand(commandForHistory);
 	}
 	else if (strcmp(f, "buy-apt") == 0)
 	{
 		unsigned int id;
 		sscanf(strtok(NULL, " "), "%u", &id);
-		buyAppartment(appartments, id);
+		buyApartment(apartments, id);
 		pushNewCommand(commandForHistory);
 	}
 	else if (strcmp(f, "history") == 0)
@@ -416,7 +467,7 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 	{
 		printf("Good Bye!");
 		writeHistoryFile();
-		writeAppartmentsToBinaryFile(appartments);
+		writeApartmentsToBinaryFile(apartments);
 		exit(0);
 	}
 	else if (*commandForHistory == '!')
@@ -424,7 +475,8 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 		char *historyCommand = getCommandFromHistory(commandForHistory);
 		int len = strlen(historyCommand);
 		char *commandToExecute = (char*)malloc(len);
+		checkFailedMalloc(commandToExecute);
 		strcpy(commandToExecute, historyCommand);
-		executeCommand(commandToExecute, appartments);		
+		executeCommand(commandToExecute, apartments);		
 	}
 }

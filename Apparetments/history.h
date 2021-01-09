@@ -3,10 +3,10 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define N 7
 #define HISTORY_FILE "./history.txt"
-#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "utils.h"
 
 typedef struct historyNode {
 	struct historyNode *next;
@@ -20,7 +20,7 @@ typedef struct historyList {
 
 void initHistoryMemory();
 
-bool isEmptyHistoryList(HistoryList* list);
+BOOL isEmptyHistoryList(HistoryList* list);
 
 void makeEmptyHistoryList(HistoryList *list);
 

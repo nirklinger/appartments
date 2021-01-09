@@ -18,30 +18,36 @@
     <ClCompile Include="Main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AppartmentStruct.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AppartmentsCommands.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="history.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AppartmentsFile.c">
+    <ClCompile Include="utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ApartmentsCommands.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ApartmentsFile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ApartmentStruct.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppartmentStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AppartmentsCommands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="history.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AppartmentsFile.h">
+    <ClInclude Include="utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ApartmentStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ApartmentsFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ApartmentsCommands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
