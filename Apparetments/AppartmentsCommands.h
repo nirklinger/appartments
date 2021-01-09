@@ -38,7 +38,7 @@ void printAptByFlag(AppartmentNode* appartmentNode, Flag* flags, int flagsArrayS
 
 void printEntryDate(EntryDate* entryDate);
 
-void printDBEntryDate(time_t* dbEntryTime);
+void printDBEntryDate(time_t dbEntryTime);
 
 short int convertMonthToNumber(char* month);
 

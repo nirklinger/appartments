@@ -1,10 +1,9 @@
 #include "AppartmentsCommands.h"
+#define ONE_DAY 86400
 #define true 1
 #define false 0
 typedef int BOOL;
 
-
-long long ONE_DAY =  86400;
 unsigned short int appartmentCode = 0;
 
 void printWelcome()
@@ -142,7 +141,7 @@ void printEntryDate(EntryDate* entryDate)
 	printf("%hi.%hi.20%hi\n", entryDate->day, entryDate->month, entryDate->year);
 }
 
-void printDBEntryDate(time_t* dbEntryTime)
+void printDBEntryDate(time_t dbEntryTime)
 {
 	char* dbEntryTimeInCTimeSyntax = ctime(&dbEntryTime);
 	//Remove week day string
@@ -187,7 +186,7 @@ AppartmentNode * findApartment(AppartmentsList* appartments, char* commandString
 
 void printAptByFlag(AppartmentNode* appartmentNode, Flag* flags, int flagsArraySize, BOOL isAsc)
 {	
-	BOOL isAppartmentMatchFlag;
+	BOOL isAppartmentMatchFlag = false;
 
 	//is Empty list
 	if(appartmentNode == NULL){
@@ -198,17 +197,16 @@ void printAptByFlag(AppartmentNode* appartmentNode, Flag* flags, int flagsArrayS
 		printAptByFlag(appartmentNode->next, flags, flagsArraySize, isAsc);
 	}
 
-	//TODO: into method
 	for (int i = 0; i < flagsArraySize; i++)
 	{
 		isAppartmentMatchFlag = checkIfAppartmentMatchFlag(flags[i], appartmentNode->appartment);
 		if(!isAppartmentMatchFlag){
 			break;
 		}
-		else if (i == (flagsArraySize -1)) {
-			printAppartment(appartmentNode->appartment);
-		}
+	}
 
+	if (isAppartmentMatchFlag){
+		printAppartment(appartmentNode->appartment);
 	}
 
 	if(isAsc){
@@ -237,9 +235,6 @@ BOOL checkIfAppartmentMatchFlag(Flag flag, Appartment* appartment)
 	}
 	if(strcmp(flag.name, "-Enter") == 0){
 		return (isDBEntryTimeAddedInLastDays(appartment, flag.value)) ? true : false;
-	}
-	if((strcmp(flag.name, "-s") == 0) || (strcmp(flag.name, "-sr") == 0) ){
-		return true;
 	}
 	return false;
 }
@@ -293,40 +288,29 @@ BOOL isDBEntryTimeAddedInLastDays(Appartment* appartment, int numberOfDays)
 
 Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc) 
 {
-	unsigned int commandLength = strlen(commandString);
-	unsigned int usedPartOfCommandLength;
-	int flagsArraySize = 0;
-	Flag* flag = (Flag*)malloc(sizeof(Flag)*10);
-	int i = 0;
+	Flag* flags = (Flag*)malloc(sizeof(Flag)*10);
 	char* valueStr;
-	flag[i].name = strtok(commandString, " ");
+	char* flagName = strtok(commandString, " ");
 	*isAsc = true;
+	int i = 0;
 	
-	while (commandLength > 0)
+	while (flagName != NULL)
 	{
-		flagsArraySize++;
-		if (flag[i].name[1] == 's') { //realing on sr and s flags being at the end
-			flag[i].value = NULL;
-			*arraySize = flagsArraySize;
-			*isAsc = (flag[i].name[2] == 'r') ? false : true;
-			return flag;
+		if (flagName[1] == 's') {
+			*isAsc = (flagName[2] == 'r') ? false : true;
 		}
-		
-		valueStr = strtok(NULL, " ");
-		flag[i].value = atoi(valueStr);
-		
-		
-		usedPartOfCommandLength = 1 + strlen(flag[i].name) + strlen(valueStr);
-		commandLength = (commandLength >= usedPartOfCommandLength)? commandLength - usedPartOfCommandLength : 0;
-		i++;
-		if (commandLength > 0) {
-			flag[i].name = strtok(NULL, " ");
-			commandLength--;
+		else {
+			flags[i].name = flagName;
+			valueStr = strtok(NULL, " ");
+			flags[i].value = atoi(valueStr);
+			i++;
 		}
+		flagName = strtok(NULL, " ");
 	}
 
-	*arraySize = flagsArraySize;
-	return flag;
+	*arraySize = i;
+	flags = (Flag*)realloc(flags, sizeof(Flag)*(*arraySize));
+	return flags;
 }
 
 unsigned short int getNewAppartmentCode()
