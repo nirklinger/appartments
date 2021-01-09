@@ -8,7 +8,7 @@ bool isEmptyList(AppartmentsList *appartments)
 void freeAppartment(Appartment * apt)
 {
 	free(apt->entryDate);
-	free(apt->address);
+	//free(apt->address);
 	free(apt);
 }
 

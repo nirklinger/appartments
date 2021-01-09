@@ -314,6 +314,51 @@ Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc)
 	return flags;
 }
 
+void deleteApartment(AppartmentsList* appartments, int days) 
+{
+	AppartmentNode* aptToFree;
+	
+	if(appartments->head == appartments->tail){
+		if(isDBEntryTimeAddedInLastDays(appartments->head->appartment, days)){
+			aptToFree = appartments->head;
+			makeEmptyAppartmentsList(appartments);
+			//TODO: remove print
+			printAppartment(aptToFree->appartment);
+			freeAppartmentNode(aptToFree);
+		}
+		return;
+	} 
+
+	appartments->head = deleteApartmentNode(appartments->head, days, &(appartments->tail));
+
+}
+
+//Delete apprtments according to last X days, return new head
+AppartmentNode* deleteApartmentNode(AppartmentNode* appartmentNode, int days, AppartmentNode** newTail){
+	AppartmentNode* aptToFree, *newAptList;
+
+	if(appartmentNode == NULL){
+		return NULL;
+	}
+
+	newAptList = deleteApartmentNode(appartmentNode->next, days, newTail);
+	
+	if(isDBEntryTimeAddedInLastDays(appartmentNode->appartment, days)){
+		//TODO: remove print
+		printAppartment(appartmentNode->appartment);
+		freeAppartmentNode(appartmentNode);
+		return newAptList;
+	}
+	else {
+		appartmentNode->next = newAptList;
+		if(newAptList == NULL){
+			*newTail = appartmentNode;
+		}
+		return appartmentNode;
+	}
+	
+}
+
 unsigned short int getNewAppartmentCode()
 {
 	return ++appartmentCode;
@@ -391,7 +436,11 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 	}
 	else if (strcmp(f, "delete-apt") == 0)
 	{
-		printf("delete %s\n", f);
+		int days;
+		char* flagName = strtok(NULL, " "); //Remove the -Enter
+		if(!strcmp(flagName, "-Enter")) {return;}
+		sscanf(strtok(NULL, " "), "%d", &days);
+		deleteApartment(appartments, days);
 		pushNewCommand(commandForHistory);
 	}
 	else if (strcmp(f, "buy-apt") == 0)

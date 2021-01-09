@@ -34,6 +34,8 @@ Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc);
 
 BOOL checkIfAppartmentMatchFlag(Flag flag, Appartment* appartment);
 
+void printAppartment(Appartment* appartment);
+
 void printAptByFlag(AppartmentNode* appartmentNode, Flag* flags, int flagsArraySize, BOOL isAsc);
 
 void printEntryDate(EntryDate* entryDate);
@@ -48,6 +50,10 @@ EntryDate* convertCommandDateToEntryDate(int commandDate);
 BOOL isDateInRange(EntryDate date1, EntryDate date2);
 
 BOOL isDBEntryTimeAddedInLastDays(Appartment* appartment, int numberOfDays);
+
+void deleteApartment(AppartmentsList* appartments, int days);
+
+AppartmentNode* deleteApartmentNode(AppartmentNode* appartmentNode, int days, AppartmentNode** newTail);
 
 void printWelcome();
 #endif // APT_COMAND
