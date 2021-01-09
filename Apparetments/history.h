@@ -32,9 +32,9 @@ void pushNewCommand(char *newCommand);
 
 void pushCommandToLongTermHistory(char *comand);
 
-void shortTermHistory(int startIndex);
+void shortTermHistory();
 
-int longTermHistory();
+void longTermHistory();
 
 char* getCommandFromHistory(char* f);
 

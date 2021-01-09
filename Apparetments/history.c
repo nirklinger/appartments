@@ -2,6 +2,7 @@
 
 char *short_term_history[N];
 HistoryList long_term_history;
+unsigned int longHistoryCounter = 0;
 
 void initHistoryMemory()
 {
@@ -70,9 +71,11 @@ void pushCommandToLongTermHistory(char *comand)
 		long_term_history.tail->next = newTail;
 		long_term_history.tail = newTail;
 	}
+
+	longHistoryCounter++;
 }
 
-void shortTermHistory(int startIndex)
+void shortTermHistory()
 {
 	for (int i = 0; i < N; i++)
 	{
@@ -81,23 +84,21 @@ void shortTermHistory(int startIndex)
 			break;
 		}
 
-		printf("%d %s\n", startIndex + i, short_term_history[i]);
+		printf("%d: %s\n", 1 + longHistoryCounter + i, short_term_history[i]);
 	}
 }
 
-int longTermHistory()
+void longTermHistory()
 {
 	HistoryNode *p = long_term_history.head;
 	int i = 1;
 
 	while (p != NULL)
 	{
-		printf("%d %s\n", i, p->command);
+		printf("%d: %s\n", i, p->command);
 		i++;
 		p = p->next;
 	}
-
-	return i;
 }
 
 char* getCommandFromHistory(char* f)
@@ -134,7 +135,7 @@ char* getCommandFromHistory(char* f)
 	}
 	else
 	{
-		printf("Command number doesnt exists in history\n");
+		printf("Command number doesn't exists in history\n");
 		return " ";
 	}
 

@@ -29,6 +29,11 @@ typedef struct appartmentsList {
 	AppartmentNode *tail;
 } AppartmentsList;
 
+typedef struct flagStruct {
+	char* name;
+	int value;
+} Flag;
+
 void makeEmptyAppartmentsList(AppartmentsList *aptList);
 
 bool isEmptyList(AppartmentsList *appartments);
