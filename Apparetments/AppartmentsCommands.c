@@ -1,15 +1,19 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include "AppartmentsCommands.h"
 #define true 1
 #define false 0
 typedef int BOOL;
 
 
-int appartmentCode = 0;
 long long ONE_DAY =  86400;
+unsigned short int appartmentCode = 0;
+
+void printWelcome()
+{
+	printf("Please enter one of the following commands:\n");
+	printf("add-apt, find-apt, buy-apt, delete-apt or exit\n");
+	printf("For reconstruction commands, please enter :\n");
+	printf("!!, !num, history, short_history or !num^str1^str2\n");
+}
 
 #pragma region addAppartments
 void addAppartmentSortedByPrice(AppartmentsList *appartments, Appartment *apt)
@@ -67,7 +71,7 @@ void addAppartment(AppartmentsList *appartments, char *commandString)
 	address[i] = '\0';
 	realloc(address, i + 1);
 
-	sscanf(addressEnd + 1, "%d %hi %hi %hi %hi",
+	sscanf(addressEnd + 1, "%d %hu %hu %hu %hu",
 		&price, &rooms, &day, &month, &year);
 
 	Appartment *apt = createAppartmentWithNowTimestamp(getNewAppartmentCode(),
@@ -326,20 +330,54 @@ Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc)
 	return flag;
 }
 
-int getNewAppartmentCode()
+unsigned short int getNewAppartmentCode()
 {
 	return ++appartmentCode;
 }
 
+void setLastAppartmentCode(unsigned short int lastCode)
+{
+	appartmentCode = lastCode;
+}
+
 void listen(AppartmentsList *appartments)
 {
-	char commandString[200];	
+	char *commandString;	
 
 	while (true)
 	{
-		gets(commandString);
+		commandString = getNextCommand();
 		executeCommand(commandString, appartments);
 	}
+}
+
+char* getNextCommand()
+{
+	char x;
+	unsigned int commandLength = 0, currentSize = 2;
+	char *nextCommand = (char*)malloc(currentSize);
+	
+	while (x = getchar())
+	{
+		if (x == '\n' || x == '\0')
+		{
+			nextCommand = realloc(nextCommand, commandLength+1);
+			nextCommand[commandLength] = '\0';
+			return nextCommand;
+		}			
+		else
+		{
+			if (commandLength >= currentSize)
+			{
+				currentSize *= 2;
+				nextCommand = realloc(nextCommand, currentSize);
+			}
+			
+			nextCommand[commandLength++] = x;
+		}			
+	}
+
+	return nextCommand;
 }
 
 void executeCommand(char* commandString, AppartmentsList *appartments)
@@ -350,6 +388,11 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 
 	char *f = strtok(commandString, " ");
 
+	if(f == NULL)
+	{
+		return;
+	}
+	
 	if (strcmp(f, "add-apt") == 0)
 	{
 		addAppartment(appartments, commandString + 8);
@@ -385,11 +428,14 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 	}
 	else if (strcmp(f, "exit") == 0)
 	{
-		printf("exit %s\n", f);
+		printf("Bye Bye!");
+		writeHistoryFile();
+		writeAppartmentsToBinaryFile(appartments);
+		exit(0);
 	}
-	else if (*f == '!')
+	else if (*commandForHistory == '!')
 	{
-		char *historyCommand = getCommandFromHistory(f);
+		char *historyCommand = getCommandFromHistory(commandForHistory);
 		int len = strlen(historyCommand);
 		char *commandToExecute = (char*)malloc(len);
 		strcpy(commandToExecute, historyCommand);

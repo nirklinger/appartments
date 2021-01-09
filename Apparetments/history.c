@@ -1,9 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include "history.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#define N 7
 
 char *short_term_history[N];
 HistoryList long_term_history;
@@ -54,7 +49,7 @@ void pushNewCommand(char *newCommand)
 	char* transferComand = makeSpaceForCommand();
 	unsigned int len = strlen(newCommand);
 
-	short_term_history[N - 1] = newCommand;	
+	short_term_history[N - 1] = newCommand;
 
 	if (transferComand != NULL)
 	{
@@ -64,16 +59,16 @@ void pushNewCommand(char *newCommand)
 
 void pushCommandToLongTermHistory(char *comand)
 {
-	HistoryNode *newHead = createHistoryNode(comand, NULL);
+	HistoryNode *newTail = createHistoryNode(comand, NULL);
 
 	if (isEmptyHistoryList(&long_term_history))
 	{
-		long_term_history.head = long_term_history.tail = newHead;
+		long_term_history.head = long_term_history.tail = newTail;
 	}
 	else
 	{
-		long_term_history.tail->next = newHead;
-		long_term_history.tail = newHead;
+		long_term_history.tail->next = newTail;
+		long_term_history.tail = newTail;
 	}
 }
 
@@ -112,27 +107,130 @@ char* getCommandFromHistory(char* f)
 		return short_term_history[N - 1];
 	}
 
-	char *replace = strchr(f, '^');
+	char *commandToExecute;
+	char *commandNumberString = strtok(f + 1, "^");
+	char *original = strtok(NULL, "^");
+	char *replace = strtok(NULL, "^");
 
-	if (replace == NULL)
+
+	int commandNumber;
+	sscanf(commandNumberString, "%d", &commandNumber);
+
+	HistoryNode *p = long_term_history.head;
+
+	int i = 1;
+
+	for (; p != NULL && i < commandNumber; i++)
 	{
-		int commandNumber;
-		sscanf(f + 1, "%d", &commandNumber);
-		
-		HistoryNode *p = long_term_history.head;
+		p = p->next;
+	}
 
-		int i = 1;
+	if (p != NULL)
+	{
+		commandToExecute = p->command;
+	}
+	else if(commandNumber - i < N){
+		commandToExecute = short_term_history[commandNumber - i];
+	}
+	else
+	{
+		printf("Command number doesnt exists in history\n");
+		return " ";
+	}
 
-		for (; p != NULL && i < commandNumber; i++)
+
+	if (original == NULL)
+	{
+		return commandToExecute;
+	}
+
+	return replaceCommandStrings(commandToExecute, original, replace);	
+}
+
+char* replaceCommandStrings(char* commandToExecute, char* original, char* replace)
+{
+	const unsigned int commandLength = strlen(commandToExecute);
+	const unsigned int originalLen = strlen(original);
+	const unsigned int replaceLen = strlen(replace);
+
+	char* p1 = strstr(commandToExecute, original);
+
+	if(p1 == NULL)
+	{
+		return commandToExecute;
+	}
+	
+	unsigned int startLength = commandLength - strlen(p1);
+	char *replacedCommandToExecute = (char*)malloc
+	(commandLength - originalLen + replaceLen + 1);
+	strncpy(replacedCommandToExecute, commandToExecute, startLength);
+	replacedCommandToExecute[startLength] = '\0';
+	strcat(replacedCommandToExecute, replace);
+	strcat(replacedCommandToExecute, commandToExecute + startLength + originalLen);
+	
+	return replacedCommandToExecute;
+}
+
+void writeHistoryFile()
+{
+	FILE* historyFile = fopen(HISTORY_FILE, "w");
+
+	writeShortHistoryCommandsToFile(historyFile);
+	
+	if(!isEmptyHistoryList(&long_term_history))
+	{
+		writeLongTermHistoryToFile(historyFile, long_term_history.head);
+	}	
+
+	fclose(historyFile);
+}
+
+void writeLongTermHistoryToFile(FILE *historyFile, HistoryNode *node)
+{
+	if(node == NULL)
+	{
+		return;
+	}
+
+	writeLongTermHistoryToFile(historyFile, node->next);
+	fprintf(historyFile, "%s\n", node->command);
+}
+
+void writeShortHistoryCommandsToFile(FILE* historyFile)
+{
+	for (int i = N-1; i >= 0 ; i--)
+	{
+		if(short_term_history[i] != NULL)
 		{
-			p = p->next;
+			fprintf(historyFile, "%s\n", short_term_history[i]);
 		}
+	}
+}
 
-		if(p != NULL)
-		{
-			return p->command;
-		}		
+void loadHistoryFromFile()
+{
+	FILE* historyFile = fopen(HISTORY_FILE, "r");
 
-		return short_term_history[commandNumber -i];
+	if(historyFile == NULL)
+	{
+		return;
+	}
+	
+	char commandString[256];
+	fgets(commandString, 256, historyFile);
+
+	LoadNextCommand(historyFile, commandString);
+
+	fclose(historyFile);
+}
+
+void LoadNextCommand(FILE *historyFile, char* commandString)
+{
+	if (!feof(historyFile))
+	{
+		char *historyCommand = _strdup(commandString);
+		fgets(commandString, 256, historyFile);
+		LoadNextCommand(historyFile, commandString);
+		pushNewCommand(strtok(historyCommand, "\n"));
 	}
 }

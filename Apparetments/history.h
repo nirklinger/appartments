@@ -1,6 +1,12 @@
 #ifndef HISTORY
 #define HISTORY
+#define _CRT_SECURE_NO_WARNINGS
+#define N 7
+#define HISTORY_FILE "./history.txt"
 #include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 typedef struct historyNode {
 	struct historyNode *next;
@@ -31,4 +37,16 @@ void shortTermHistory(int startIndex);
 int longTermHistory();
 
 char* getCommandFromHistory(char* f);
+
+char* replaceCommandStrings(char* commandToExecute, char* original, char* replace);
+
+void writeShortHistoryCommandsToFile(FILE* historyFile);
+
+void writeLongTermHistoryToFile(FILE *historyFile, HistoryNode *node);
+
+void writeHistoryFile();
+
+void loadHistoryFromFile();
+
+void LoadNextCommand(FILE *historyFile, char* commandString);
 #endif //HISTORY 
