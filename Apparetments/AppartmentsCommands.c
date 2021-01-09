@@ -126,9 +126,8 @@ void buyAppartment(AppartmentsList *appartments, unsigned int id)
 
 void printAppartment(Appartment* appartment)
 {
-	//TODO: check if room count changed into unsigned short int, if so change into hu
 	printf("Apt details:\n");
-	printf("Code: %d\n", appartment->id); 
+	printf("Code: %hu\n", appartment->id); 
 	printf("Address: %s\n", appartment->address);
 	printf("Number of rooms: %hi\n", appartment->roomCount); 
 	printf("Price: %d\n", appartment->price);
@@ -150,17 +149,17 @@ void printDBEntryDate(time_t* dbEntryTime)
 	strtok(dbEntryTimeInCTimeSyntax, " ");
 	//Convert month name into number
 	char* monthString =  strtok(NULL, " ");
-	int month = convertMonthToNumber(monthString);
+	short int month = convertMonthToNumber(monthString);
 	//Exctract day
 	char* day = strtok(NULL, " ");
 	//Remove clock time
 	strtok(NULL, " ");
 	//Exctract year, the year alreay includes '\n' so no need to add when printing.
 	char* year = strtok(NULL, " ");
-	printf("%s.%d.%s", day, month, year);	
+	printf("%s.%hi.%s", day, month, year);	
 }
 
-int convertMonthToNumber(char* month) 
+short int convertMonthToNumber(char* month) 
 {
 	if (strcmp(month, "Jan") == 0) {return 1;}
 	if (strcmp(month, "Feb") == 0) {return 2;}
