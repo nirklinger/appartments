@@ -3,8 +3,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include "AppartmentsCommands.h"
+#define true 1
+#define false 0
+typedef int BOOL;
+
 
 int appartmentCode = 0;
+long long ONE_DAY =  86400;
 
 #pragma region addAppartments
 void addAppartmentSortedByPrice(AppartmentsList *appartments, Appartment *apt)
@@ -115,6 +120,212 @@ void buyAppartment(AppartmentsList *appartments, unsigned int id)
 	}
 }
 
+void printAppartment(Appartment* appartment)
+{
+	//TODO: check if room count changed into unsigned short int, if so change into hu
+	printf("Apt details:\n");
+	printf("Code: %d\n", appartment->id); 
+	printf("Address: %s\n", appartment->address);
+	printf("Number of rooms: %hi\n", appartment->roomCount); 
+	printf("Price: %d\n", appartment->price);
+	printf("Entry date: "); 
+	printEntryDate(appartment->entryDate);
+	printf("Database entry date: ");
+	printDBEntryDate(appartment->dbEntryTime);
+}
+
+void printEntryDate(EntryDate* entryDate)
+{
+	printf("%hi.%hi.20%hi\n", entryDate->day, entryDate->month, entryDate->year);
+}
+
+void printDBEntryDate(time_t* dbEntryTime)
+{
+	char* dbEntryTimeInCTimeSyntax = ctime(&dbEntryTime);
+	//Remove week day string
+	strtok(dbEntryTimeInCTimeSyntax, " ");
+	//Convert month name into number
+	char* monthString =  strtok(NULL, " ");
+	int month = convertMonthToNumber(monthString);
+	//Exctract day
+	char* day = strtok(NULL, " ");
+	//Remove clock time
+	strtok(NULL, " ");
+	//Exctract year, the year alreay includes '\n' so no need to add when printing.
+	char* year = strtok(NULL, " ");
+	printf("%s.%d.%s", day, month, year);	
+}
+
+int convertMonthToNumber(char* month) 
+{
+	if (strcmp(month, "Jan") == 0) {return 1;}
+	if (strcmp(month, "Feb") == 0) {return 2;}
+	if (strcmp(month, "Mar") == 0) {return 3;}
+	if (strcmp(month, "Apr") == 0) {return 4;}
+	if (strcmp(month, "May") == 0) {return 5;}
+	if (strcmp(month, "Jun") == 0) {return 6;}
+	if (strcmp(month, "Jul") == 0) {return 7;}
+	if (strcmp(month, "Agu") == 0) {return 8;}
+	if (strcmp(month, "Sep") == 0) {return 9;}
+	if (strcmp(month, "Oct") == 0) {return 10;}
+	if (strcmp(month, "Nov") == 0) {return 11;}
+	if (strcmp(month, "Dec") == 0) {return 12;}
+	return 0;
+}
+
+AppartmentNode * findApartment(AppartmentsList* appartments, char* commandString) 
+{	
+	Flag* flags;
+	int flagsArraySize;
+	BOOL isAsc;
+	flags = getFlagsArray(commandString, &flagsArraySize, &isAsc);
+	printAptByFlag(appartments->head, flags, flagsArraySize, isAsc);
+}
+
+void printAptByFlag(AppartmentNode* appartmentNode, Flag* flags, int flagsArraySize, BOOL isAsc)
+{	
+	BOOL isAppartmentMatchFlag;
+
+	//is Empty list
+	if(appartmentNode == NULL){
+		return;
+	}
+
+	if(!isAsc) {
+		printAptByFlag(appartmentNode->next, flags, flagsArraySize, isAsc);
+	}
+
+	//TODO: into method
+	for (int i = 0; i < flagsArraySize; i++)
+	{
+		isAppartmentMatchFlag = checkIfAppartmentMatchFlag(flags[i], appartmentNode->appartment);
+		if(!isAppartmentMatchFlag){
+			break;
+		}
+		else if (i == (flagsArraySize -1)) {
+			printAppartment(appartmentNode->appartment);
+		}
+
+	}
+
+	if(isAsc){
+		printAptByFlag(appartmentNode->next, flags, flagsArraySize, isAsc);
+	}
+}
+
+BOOL checkIfAppartmentMatchFlag(Flag flag, Appartment* appartment)
+{
+	if(strcmp(flag.name,"-MaxPrice") == 0){
+		return (appartment->price <= flag.value) ? true : false;
+	}
+	if(strcmp(flag.name,"-MinPrice") == 0) {
+		return (appartment->price >= flag.value) ? true : false;
+	}
+	if(strcmp(flag.name,"-MinNumRooms") == 0){ 
+		return (appartment->roomCount >= flag.value) ? true : false;
+	}
+	if(strcmp(flag.name,"-MaxNumRooms") == 0){
+		return (appartment->roomCount <= flag.value) ? true : false;
+	}
+	if(strcmp(flag.name,"-Date") == 0){
+		EntryDate* flagEntryDate = convertCommandDateToEntryDate(flag.value);
+		BOOL isAppartmentDateMatchFlagDate = isDateInRange(*(appartment->entryDate), *(flagEntryDate));
+		return (isAppartmentDateMatchFlagDate) ? true : false;
+	}
+	if(strcmp(flag.name, "-Enter") == 0){
+		return (isDBEntryTimeAddedInLastDays(appartment, flag.value)) ? true : false;
+	}
+	if((strcmp(flag.name, "-s") == 0) || (strcmp(flag.name, "-sr") == 0) ){
+		return true;
+	}
+	return false;
+}
+
+EntryDate* convertCommandDateToEntryDate(int commandDate)
+{
+	short int day, month, year;
+	
+	day = (short)(commandDate/1000000);
+	commandDate = commandDate%1000000;
+	month = (short)(commandDate/10000);
+	year = (short)(commandDate%100);
+	
+	return createEntryDate(day, month, year);
+}
+
+//return true if date1 is before or equal to date2
+BOOL isDateInRange(EntryDate date1, EntryDate date2)
+{
+	if ((date1.year == date2.year)&&(date1.month == date2.month)&&(date1.day == date2.day)){
+		return true;
+	}
+
+	if (date1.year < date2.year){
+		return true;
+	}
+
+	if(date1.year > date2.year){
+		return false;
+	}
+	
+	if (date1.month < date2.month){
+		return true;
+	}
+
+	if (date1.month > date2.month){
+		return false;
+	}
+	return (date1.day < date2.day) ? true : false ;	
+}
+
+BOOL isDBEntryTimeAddedInLastDays(Appartment* appartment, int numberOfDays)
+{
+	time_t nowTime;
+	nowTime = time(NULL);
+	long long appartmentDBEntryTime = (long long)appartment->dbEntryTime;
+	long long currentTime = (long long) nowTime;
+	
+	return ((currentTime - appartmentDBEntryTime) <= ONE_DAY*numberOfDays);
+}
+
+Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc) 
+{
+	unsigned int commandLength = strlen(commandString);
+	unsigned int usedPartOfCommandLength;
+	int flagsArraySize = 0;
+	Flag* flag = (Flag*)malloc(sizeof(Flag)*10);
+	int i = 0;
+	char* valueStr;
+	flag[i].name = strtok(commandString, " ");
+	*isAsc = true;
+	
+	while (commandLength > 0)
+	{
+		flagsArraySize++;
+		if (flag[i].name[1] == 's') { //realing on sr and s flags being at the end
+			flag[i].value = NULL;
+			*arraySize = flagsArraySize;
+			*isAsc = (flag[i].name[2] == 'r') ? false : true;
+			return flag;
+		}
+		
+		valueStr = strtok(NULL, " ");
+		flag[i].value = atoi(valueStr);
+		
+		
+		usedPartOfCommandLength = 1 + strlen(flag[i].name) + strlen(valueStr);
+		commandLength = (commandLength >= usedPartOfCommandLength)? commandLength - usedPartOfCommandLength : 0;
+		i++;
+		if (commandLength > 0) {
+			flag[i].name = strtok(NULL, " ");
+			commandLength--;
+		}
+	}
+
+	*arraySize = flagsArraySize;
+	return flag;
+}
+
 int getNewAppartmentCode()
 {
 	return ++appartmentCode;
@@ -146,7 +357,7 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 	}
 	else if (strcmp(f, "find-apt") == 0)
 	{
-		printf("find %s\n", f);
+		findApartment(appartments, commandString + 9);
 		pushNewCommand(commandForHistory);
 	}
 	else if (strcmp(f, "delete-apt") == 0)
