@@ -40,7 +40,7 @@ void printEntryDate(EntryDate* entryDate);
 
 void printDBEntryDate(time_t* dbEntryTime);
 
-int convertMonthToNumber(char* month);
+short int convertMonthToNumber(char* month);
 
 EntryDate* convertCommandDateToEntryDate(int commandDate);
 
