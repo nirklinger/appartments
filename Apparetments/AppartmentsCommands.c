@@ -10,7 +10,7 @@ void printWelcome()
 {
 	printf("Please enter one of the following commands:\n");
 	printf("add-apt, find-apt, buy-apt, delete-apt or exit\n");
-	printf("For reconstruction commands, please enter :\n");
+	printf("For reconstruction commands, please enter:\n");
 	printf("!!, !num, history, short_history or !num^str1^str2\n");
 }
 
@@ -182,6 +182,7 @@ AppartmentNode * findApartment(AppartmentsList* appartments, char* commandString
 	BOOL isAsc;
 	flags = getFlagsArray(commandString, &flagsArraySize, &isAsc);
 	printAptByFlag(appartments->head, flags, flagsArraySize, isAsc);
+	free(flags);
 }
 
 void printAptByFlag(AppartmentNode* appartmentNode, Flag* flags, int flagsArraySize, BOOL isAsc)
@@ -339,6 +340,7 @@ char* getNextCommand()
 	char x;
 	unsigned int commandLength = 0, currentSize = 2;
 	char *nextCommand = (char*)malloc(currentSize);
+	printf(">> ");
 	
 	while (x = getchar())
 	{
@@ -366,8 +368,9 @@ char* getNextCommand()
 void executeCommand(char* commandString, AppartmentsList *appartments)
 {
 	int len = strlen(commandString);
-	char *commandForHistory = (char*)malloc(len);
+	char *commandForHistory = (char*)malloc(len+1);
 	strcpy(commandForHistory, commandString);
+	commandForHistory[len] = '\0';
 
 	char *f = strtok(commandString, " ");
 
@@ -400,18 +403,18 @@ void executeCommand(char* commandString, AppartmentsList *appartments)
 	}
 	else if (strcmp(f, "history") == 0)
 	{
-		int count = longTermHistory();
-		shortTermHistory(count);
-		pushNewCommand(commandForHistory);
+		longTermHistory();
+		shortTermHistory();
+		free(commandForHistory);
 	}
 	else if (strcmp(f, "short_history") == 0)
 	{
-		shortTermHistory(1);
-		pushNewCommand(commandForHistory);
+		shortTermHistory();
+		free(commandForHistory);
 	}
 	else if (strcmp(f, "exit") == 0)
 	{
-		printf("Bye Bye!");
+		printf("Good Bye!");
 		writeHistoryFile();
 		writeAppartmentsToBinaryFile(appartments);
 		exit(0);
