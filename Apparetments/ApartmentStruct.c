@@ -8,7 +8,7 @@ BOOL isEmptyList(ApartmentsList *apartments)
 void freeApartment(Apartment * apt)
 {
 	free(apt->entryDate);
-	//free(apt->address);
+	free(apt->address);
 	free(apt);
 }
 
