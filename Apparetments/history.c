@@ -14,7 +14,7 @@ void initHistoryMemory()
 	makeEmptyHistoryList(&long_term_history);
 }
 
-bool isEmptyHistoryList(HistoryList* list)
+BOOL isEmptyHistoryList(HistoryList* list)
 {
 	return (list->head == NULL) ? true : false;
 }
@@ -27,6 +27,7 @@ void makeEmptyHistoryList(HistoryList *list)
 HistoryNode* createHistoryNode(char* command, HistoryNode* next)
 {
 	HistoryNode *newNode = (HistoryNode*)malloc(sizeof(HistoryNode));
+	checkFailedMalloc(newNode);	
 	newNode->command = command;
 	newNode->next = next;
 
@@ -164,6 +165,7 @@ char* replaceCommandStrings(char* commandToExecute, char* original, char* replac
 	unsigned int startLength = commandLength - strlen(p1);
 	char *replacedCommandToExecute = (char*)malloc
 	(commandLength - originalLen + replaceLen + 1);
+	checkFailedMalloc(replacedCommandToExecute);
 	strncpy(replacedCommandToExecute, commandToExecute, startLength);
 	replacedCommandToExecute[startLength] = '\0';
 	strcat(replacedCommandToExecute, replace);
@@ -175,6 +177,7 @@ char* replaceCommandStrings(char* commandToExecute, char* original, char* replac
 void writeHistoryFile()
 {
 	FILE* historyFile = fopen(HISTORY_FILE, "w");
+	checkFailedFileOpen(historyFile);
 
 	writeShortHistoryCommandsToFile(historyFile);
 	

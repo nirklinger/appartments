@@ -1,28 +1,29 @@
-#include "AppartmentsFile.h"
+#include "ApartmentsFile.h"
 
-int writeAppartmentsToBinaryFile(AppartmentsList *aptList) 
+int writeApartmentsToBinaryFile(ApartmentsList *aptList) 
 {
 	if(isEmptyList(aptList))
 	{
 		return;
 	}
 
-	FILE *appartmentsFile = fopen(APPARTMENTS_FILE, "wb");
-	fseek(appartmentsFile, sizeof(unsigned int), SEEK_SET);
+	FILE *apartmentsFile = fopen(ApartmentS_FILE, "wb");
+	checkFailedFileOpen(apartmentsFile);
+	fseek(apartmentsFile, sizeof(unsigned int), SEEK_SET);
 
-	AppartmentNode *node = aptList->head;
+	ApartmentNode *node = aptList->head;
 	unsigned int nodeCount = 0;
 	
 	while (node != NULL)
 	{
-		writeAppartmentToFile(appartmentsFile, node->appartment);
+		writeApartmentToFile(apartmentsFile, node->apartment);
 		node = node->next;
 		nodeCount++;
 	}
 
-	rewind(appartmentsFile);
-	fwrite(&nodeCount, sizeof(unsigned int), 1, appartmentsFile);
-	fclose(appartmentsFile);
+	rewind(apartmentsFile);
+	fwrite(&nodeCount, sizeof(unsigned int), 1, apartmentsFile);
+	fclose(apartmentsFile);
 }
 
 void buildCompressedData(BYTE *compressedData, short int roomCount, EntryDate* date)
@@ -32,7 +33,7 @@ void buildCompressedData(BYTE *compressedData, short int roomCount, EntryDate* d
 	compressedData[2] = date->year << 4;
 }
 
-void writeAppartmentToFile(FILE* file, Appartment *apt)
+void writeApartmentToFile(FILE* file, Apartment *apt)
 {
 	BYTE compressedData[3];
 	buildCompressedData(compressedData, apt->roomCount, apt->entryDate);
@@ -46,9 +47,9 @@ void writeAppartmentToFile(FILE* file, Appartment *apt)
 	fwrite(compressedData, 1, 3, file);
 }
 
-void loadAppartmentsFromFile(AppartmentsList *aptList)
+void loadApartmentsFromFile(ApartmentsList *aptList)
 {
-	FILE *file = fopen(APPARTMENTS_FILE, "rb");
+	FILE *file = fopen(ApartmentS_FILE, "rb");
 
 	if (file == NULL)
 	{
@@ -58,20 +59,20 @@ void loadAppartmentsFromFile(AppartmentsList *aptList)
 	unsigned int aptCount;
 
 	fread(&aptCount, sizeof(unsigned int), 1, file);
-	unsigned short int maxAppartmentCode = 0;
+	unsigned short int maxApartmentCode = 0;
 	for (unsigned int i = 0; i < aptCount; i++)
 	{
-		Appartment *apt = readAppartmentFromFile(file);
-		addAppartmentSortedByPrice(aptList, apt);
+		Apartment *apt = readApartmentFromFile(file);
+		addApartmentSortedByPrice(aptList, apt);
 
-		if ((apt->id) > maxAppartmentCode)
-			maxAppartmentCode = apt->id;
+		if ((apt->id) > maxApartmentCode)
+			maxApartmentCode = apt->id;
 	}
 	fclose(file);
-	setLastAppartmentCode(maxAppartmentCode);
+	setLastApartmentCode(maxApartmentCode);
 }
 
-Appartment* readAppartmentFromFile(FILE* file)
+Apartment* readApartmentFromFile(FILE* file)
 {
 	BYTE compressedData[3];
 	unsigned short int addressLength, id, roomCount, day, month, year;
@@ -83,6 +84,7 @@ Appartment* readAppartmentFromFile(FILE* file)
 	fread(&addressLength, SHORT_SIZE, 1, file);
 
 	address = (char*)malloc(addressLength + 1);
+	checkFailedMalloc(address);
 	fread(address, 1, addressLength, file);
 	address[addressLength] = '\0';
 	
@@ -91,7 +93,7 @@ Appartment* readAppartmentFromFile(FILE* file)
 	fread(compressedData, 1, 3, file);
 
 	parseCompressedData(compressedData, &roomCount, &day, &month, &year);
-	Appartment *apt = createAppartment(id, address, price, roomCount, day, 
+	Apartment *apt = createApartment(id, address, price, roomCount, day, 
 		month, year, dbEntryTime);
 
 	return apt;

@@ -143,17 +143,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AppartmentsCommands.c" />
-    <ClCompile Include="AppartmentsFile.c" />
-    <ClCompile Include="AppartmentStruct.c" />
+    <ClCompile Include="ApartmentsCommands.c" />
+    <ClCompile Include="ApartmentsFile.c" />
+    <ClCompile Include="ApartmentStruct.c" />
     <ClCompile Include="history.c" />
     <ClCompile Include="Main.c" />
+    <ClCompile Include="utils.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppartmentsCommands.h" />
-    <ClInclude Include="AppartmentsFile.h" />
-    <ClInclude Include="AppartmentStruct.h" />
+    <ClInclude Include="ApartmentsCommands.h" />
+    <ClInclude Include="ApartmentsFile.h" />
+    <ClInclude Include="ApartmentStruct.h" />
     <ClInclude Include="history.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

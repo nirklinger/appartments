@@ -1,16 +1,16 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "AppartmentsCommands.h"
-#include "AppartmentStruct.h"
+#include "ApartmentsCommands.h"
+#include "ApartmentStruct.h"
 #include "history.h"
 
 void main()
 {	
-	AppartmentsList appartments;
-	makeEmptyAppartmentsList(&appartments);	
+	ApartmentsList apartments;
+	makeEmptyApartmentsList(&apartments);	
 	initHistoryMemory();
 	loadHistoryFromFile();
-	loadAppartmentsFromFile(&appartments);
+	loadApartmentsFromFile(&apartments);
 	printWelcome();
-	listen(&appartments);
+	listen(&apartments);
 }
 
