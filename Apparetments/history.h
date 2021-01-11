@@ -26,8 +26,10 @@ void makeEmptyHistoryList(HistoryList *list);
 
 HistoryNode* createHistoryNode(char* command, HistoryNode* next);
 
+//Make space in short term history array for the new command
 char *makeSpaceForCommand();
 
+//Push the new command to both short and long term history
 void pushNewCommand(char *newCommand);
 
 void pushCommandToLongTermHistory(char *comand);
