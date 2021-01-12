@@ -34,6 +34,7 @@ HistoryNode* createHistoryNode(char* command, HistoryNode* next)
 	return newNode;
 }
 
+//Make space in short term history array for the new command
 char *makeSpaceForCommand()
 {
 	char *oldest = short_term_history[0];
@@ -46,6 +47,7 @@ char *makeSpaceForCommand()
 	return oldest;
 }
 
+//Push the new command to both short and long term history
 void pushNewCommand(char *newCommand)
 {
 	char* transferComand = makeSpaceForCommand();

@@ -96,17 +96,20 @@ void buyApartment(ApartmentsList *apartments, unsigned int id)
 		return;
 	}
 	
+	//While next node isn't for buying, go forward
 	while (node != apartments->tail && node->next->apartment->id != id)
 	{
 		node = node->next;
 	}
 
+	//If current node at the end of list, it means that the id wasn't found
 	if (node == apartments->tail)
 	{
 		printf("No apartment match id: %d\n", id);
 		return;
 	}
 
+	//Remove the next node and update the list. If next node is tail then update accordingly
 	if (node->next == apartments->tail)
 	{
 		apartments->tail = node;
@@ -175,12 +178,13 @@ short int convertMonthToNumber(char* month)
 
 ApartmentNode * findApartment(ApartmentsList* apartments, char* commandString) 
 {	
-	Flag* flags;
+	Flag* searchFlags;
 	int flagsArraySize;
 	BOOL isAsc, hasFound = false;
-	flags = getFlagsArray(commandString, &flagsArraySize, &isAsc);
-	printAptByFlag(apartments->head, flags, flagsArraySize, isAsc, &hasFound);
-	free(flags);
+
+	searchFlags = getFlagsArray(commandString, &flagsArraySize, &isAsc);
+	printAptByFlag(apartments->head, searchFlags, flagsArraySize, isAsc, &hasFound);
+	free(searchFlags);
 
 	if (!hasFound)
 	{
@@ -188,6 +192,9 @@ ApartmentNode * findApartment(ApartmentsList* apartments, char* commandString)
 	}
 }
 
+//If all of the search flags from command match the apartment then print it.
+//If an apartment was found to print, update "hasFound".
+//Print can be in Asc/Desc order according to isAsc parameter.
 void printAptByFlag(ApartmentNode* apartmentNode, Flag* flags, int flagsArraySize, BOOL isAsc, BOOL *hasFound)
 {	
 	BOOL isApartmentMatchFlag = false;
@@ -290,6 +297,7 @@ BOOL isDBEntryTimeAddedInLastDays(Apartment* apartment, int numberOfDays)
 	return ((currentTime - apartmentDBEntryTime) <= ONE_DAY*numberOfDays);
 }
 
+//Extract flags with values from find-apt command into an array. Update isAsc pointer accordingly to -s/-sr flags
 Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc) 
 {
 	Flag* flags = (Flag*)malloc(sizeof(Flag)*10);
@@ -299,8 +307,10 @@ Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc)
 	*isAsc = true;
 	int i = 0;
 	
+	//While there are still more "search flags" to extract from the command, store the flags in an array
 	while (flagName != NULL)
 	{
+		//update isAsc accordint to -s/-sr.
 		if (flagName[1] == 's') {
 			*isAsc = (flagName[2] == 'r') ? false : true;
 		}
@@ -318,6 +328,7 @@ Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc)
 	return flags;
 }
 
+//Delete all apartments added in the last X days
 void deleteApartment(ApartmentsList* apartments, int days) 
 {
 	ApartmentNode* aptToFree;
@@ -335,7 +346,9 @@ void deleteApartment(ApartmentsList* apartments, int days)
 
 }
 
-//Delete apprtments according to last X days, return new head
+//Delete apprtments added in the last X days - Helper.
+//Update new tail if needed.
+//Returns the new head 
 ApartmentNode* deleteApartmentNode(ApartmentNode* apartmentNode, int days, ApartmentNode** newTail){
 	ApartmentNode* aptToFree, *newAptList;
 
@@ -369,6 +382,7 @@ void setLastApartmentCode(unsigned short int lastCode)
 	apartmentCode = lastCode;
 }
 
+//Listen to the next command from user
 void listen(ApartmentsList *apartments)
 {
 	char *commandString;	
@@ -439,8 +453,9 @@ void executeCommand(char* commandString, ApartmentsList *apartments)
 	else if (strcmp(f, "delete-apt") == 0)
 	{
 		int days;
-		// Remove flag
-		strtok(NULL, " ");	
+		// Remove flag delete-apt
+		strtok(NULL, " ");
+		//Scan value for the -Enter flag from command
 		sscanf(strtok(NULL, " "), "%d", &days);
 		deleteApartment(apartments, days);
 		pushNewCommand(commandForHistory);
@@ -448,6 +463,7 @@ void executeCommand(char* commandString, ApartmentsList *apartments)
 	else if (strcmp(f, "buy-apt") == 0)
 	{
 		unsigned int id;
+		//Scan apartment id to buy from command
 		sscanf(strtok(NULL, " "), "%u", &id);
 		buyApartment(apartments, id);
 		pushNewCommand(commandForHistory);

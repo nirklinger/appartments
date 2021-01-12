@@ -29,6 +29,8 @@ typedef struct apartmentsList {
 	ApartmentNode *tail;
 } ApartmentsList;
 
+//Search flags struct
+//Match find-apt's parameters with values
 typedef struct flagStruct {
 	char* name;
 	int value;
