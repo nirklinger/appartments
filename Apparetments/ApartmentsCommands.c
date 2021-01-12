@@ -300,7 +300,7 @@ BOOL isDBEntryTimeAddedInLastDays(Apartment* apartment, int numberOfDays)
 //Extract flags with values from find-apt command into an array. Update isAsc pointer accordingly to -s/-sr flags
 Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc) 
 {
-	Flag* flags = (Flag*)malloc(sizeof(Flag)*10);
+	Flag* flags = (Flag*)malloc(sizeof(Flag)*FLAGS_MAX_SIZE);
 	checkFailedMalloc(flags);
 	char* valueStr;
 	char* flagName = strtok(commandString, " ");
@@ -391,6 +391,7 @@ void listen(ApartmentsList *apartments)
 	{
 		commandString = getNextCommand();
 		executeCommand(commandString, apartments);
+		free(commandString);
 	}
 }
 
@@ -483,7 +484,9 @@ void executeCommand(char* commandString, ApartmentsList *apartments)
 	{
 		printf("Good Bye!");
 		writeHistoryFile();
+		freeHistory();
 		writeApartmentsToBinaryFile(apartments);
+		freeApartmentsRecursive(apartments->head);
 		exit(0);
 	}
 	else if (*commandForHistory == '!')
