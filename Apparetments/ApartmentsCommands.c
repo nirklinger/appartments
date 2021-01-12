@@ -453,12 +453,19 @@ void executeCommand(char* commandString, ApartmentsList *apartments)
 	}
 	else if (strcmp(f, "delete-apt") == 0)
 	{
-		int days;
-		// Remove flag delete-apt
-		strtok(NULL, " ");
-		//Scan value for the -Enter flag from command
-		sscanf(strtok(NULL, " "), "%d", &days);
-		deleteApartment(apartments, days);
+		if (isEmptyList(apartments))
+		{
+			printf("No apartments in system currently\n");			
+		}
+		else 
+		{
+			int days;
+			// Remove flag delete-apt
+			strtok(NULL, " ");
+			//Scan value for the -Enter flag from command
+			sscanf(strtok(NULL, " "), "%d", &days);
+			deleteApartment(apartments, days);
+		}
 		pushNewCommand(commandForHistory);
 	}
 	else if (strcmp(f, "buy-apt") == 0)
