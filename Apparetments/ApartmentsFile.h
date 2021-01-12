@@ -1,7 +1,7 @@
 #ifndef APT_FILE
 #define APT_FILE
 #define _CRT_SECURE_NO_WARNINGS
-#define ApartmentS_FILE "./apartments.dat"
+#define APARTMENTS_FILE "./apartments.dat"
 #define SHORT_SIZE sizeof(unsigned short int)
 #include <stdio.h>
 #include <string.h>
@@ -11,7 +11,7 @@
 
 typedef unsigned char BYTE;
 
-int writeApartmentsToBinaryFile(ApartmentsList *aptList);
+void writeApartmentsToBinaryFile(ApartmentsList *aptList);
 
 void buildCompressedData(BYTE *compressedData, short int roomCount, EntryDate* date);
 

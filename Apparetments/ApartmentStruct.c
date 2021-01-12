@@ -18,6 +18,15 @@ void freeApartmentNode(ApartmentNode *node)
 	free(node);
 }
 
+void freeApartmentsRecursive(ApartmentNode *node)
+{
+	if (node != NULL)
+	{
+		freeApartmentsRecursive(node->next);
+		freeApartmentNode(node);
+	}
+}
+
 void makeEmptyApartmentsList(ApartmentsList *aptList)
 {
 	aptList->tail = aptList->head = NULL;

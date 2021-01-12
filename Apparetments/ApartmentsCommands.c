@@ -300,7 +300,7 @@ BOOL isDBEntryTimeAddedInLastDays(Apartment* apartment, int numberOfDays)
 //Extract flags with values from find-apt command into an array. Update isAsc pointer accordingly to -s/-sr flags
 Flag* getFlagsArray(char* commandString, int* arraySize, BOOL* isAsc) 
 {
-	Flag* flags = (Flag*)malloc(sizeof(Flag)*10);
+	Flag* flags = (Flag*)malloc(sizeof(Flag)*FLAGS_MAX_SIZE);
 	checkFailedMalloc(flags);
 	char* valueStr;
 	char* flagName = strtok(commandString, " ");
@@ -391,6 +391,7 @@ void listen(ApartmentsList *apartments)
 	{
 		commandString = getNextCommand();
 		executeCommand(commandString, apartments);
+		free(commandString);
 	}
 }
 
@@ -452,12 +453,19 @@ void executeCommand(char* commandString, ApartmentsList *apartments)
 	}
 	else if (strcmp(f, "delete-apt") == 0)
 	{
-		int days;
-		// Remove flag delete-apt
-		strtok(NULL, " ");
-		//Scan value for the -Enter flag from command
-		sscanf(strtok(NULL, " "), "%d", &days);
-		deleteApartment(apartments, days);
+		if (isEmptyList(apartments))
+		{
+			printf("No apartments in system currently\n");			
+		}
+		else 
+		{
+			int days;
+			// Remove flag delete-apt
+			strtok(NULL, " ");
+			//Scan value for the -Enter flag from command
+			sscanf(strtok(NULL, " "), "%d", &days);
+			deleteApartment(apartments, days);
+		}
 		pushNewCommand(commandForHistory);
 	}
 	else if (strcmp(f, "buy-apt") == 0)
@@ -483,7 +491,9 @@ void executeCommand(char* commandString, ApartmentsList *apartments)
 	{
 		printf("Good Bye!");
 		writeHistoryFile();
+		freeHistory();
 		writeApartmentsToBinaryFile(apartments);
+		freeApartmentsRecursive(apartments->head);
 		exit(0);
 	}
 	else if (*commandForHistory == '!')

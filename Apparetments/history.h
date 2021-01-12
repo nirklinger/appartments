@@ -51,4 +51,10 @@ void writeHistoryFile();
 void loadHistoryFromFile();
 
 void LoadNextCommand(FILE *historyFile, char* commandString);
+
+void freeHistory();
+
+void freeShortHistory();
+
+void freeHistoryRecursive(HistoryNode *node);
 #endif //HISTORY 

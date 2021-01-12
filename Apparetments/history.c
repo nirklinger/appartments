@@ -145,12 +145,13 @@ char* getCommandFromHistory(char* f)
 
 	if (original == NULL)
 	{
-		return commandToExecute;
+		return _strdup(commandToExecute);
 	}
 
 	return replaceCommandStrings(commandToExecute, original, replace);	
 }
 
+// this function takes a full length command string and replaces sub string with another string
 char* replaceCommandStrings(char* commandToExecute, char* original, char* replace)
 {
 	const unsigned int commandLength = strlen(commandToExecute);
@@ -238,5 +239,32 @@ void LoadNextCommand(FILE *historyFile, char* commandString)
 		fgets(commandString, 256, historyFile);
 		LoadNextCommand(historyFile, commandString);
 		pushNewCommand(strtok(historyCommand, "\n"));
+	}
+}
+
+void freeHistory()
+{
+	freeShortHistory();
+	freeHistoryRecursive(long_term_history.head);
+}
+
+void freeShortHistory()
+{
+	for (int i = 0; i < N; i++)
+	{
+		if (short_term_history[i] != NULL)
+		{
+			free(short_term_history[i]);
+		}
+	}
+}
+
+void freeHistoryRecursive(HistoryNode *node)
+{
+	if (node != NULL)
+	{
+		freeHistoryRecursive(node->next);
+		free(node->command);
+		free(node);
 	}
 }

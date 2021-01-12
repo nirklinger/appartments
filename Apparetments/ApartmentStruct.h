@@ -1,5 +1,6 @@
 #ifndef APT_STRUCT
 #define APT_STRUCT
+#define FLAGS_MAX_SIZE 10
 #include <time.h>
 #include <stdlib.h>
 #include "utils.h"
@@ -54,4 +55,5 @@ void freeApartment(Apartment * apt);
 
 void freeApartmentNode(ApartmentNode *node);
 
+void freeApartmentsRecursive(ApartmentNode *node);
 #endif // APT_STRUCT

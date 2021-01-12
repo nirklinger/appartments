@@ -1,14 +1,16 @@
 #include "ApartmentsFile.h"
 
-int writeApartmentsToBinaryFile(ApartmentsList *aptList) 
+void writeApartmentsToBinaryFile(ApartmentsList *aptList) 
 {
-	if(isEmptyList(aptList))
+	if (isEmptyList(aptList))
 	{
+		remove(APARTMENTS_FILE);
 		return;
 	}
-
-	FILE *apartmentsFile = fopen(ApartmentS_FILE, "wb");
-	checkFailedFileOpen(apartmentsFile);
+	
+	FILE *apartmentsFile = fopen(APARTMENTS_FILE, "wb");
+	checkFailedFileOpen(apartmentsFile);	
+	
 	fseek(apartmentsFile, sizeof(unsigned int), SEEK_SET);
 
 	ApartmentNode *node = aptList->head;
@@ -49,7 +51,7 @@ void writeApartmentToFile(FILE* file, Apartment *apt)
 
 void loadApartmentsFromFile(ApartmentsList *aptList)
 {
-	FILE *file = fopen(ApartmentS_FILE, "rb");
+	FILE *file = fopen(APARTMENTS_FILE, "rb");
 
 	if (file == NULL)
 	{
